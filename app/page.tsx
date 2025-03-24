@@ -2,6 +2,7 @@
 // 'use client'
 import CryptoPriceChart from "@/components/CryptoPriceChart";
 import { prices } from "@/lib/data";
+import { volumes } from "@/lib/data";
 
 export default function Home() {
   return (
@@ -9,7 +10,7 @@ export default function Home() {
       {/* Hello World */}
       {/* <BarChartComponent /> */}
       {/* <div className="w-1/2 bg-white p-4"> */}
-        <CryptoPriceChart prices={prices} />
+        <CryptoPriceChart prices={prices} volumes={volumes} />
 
       {/* </div> */}
     </div>

@@ -20,3 +20,18 @@ export function transformData(prices) {
   return transformedData
 
 }
+
+export function transformVolumes(volumes) {
+
+  // const transformedData = []
+
+  const transformedData =  volumes.map((item, index) => {
+    return {
+      volume: item[1],
+      timestamp: item[0]
+    }
+  })
+
+  return transformedData
+
+}

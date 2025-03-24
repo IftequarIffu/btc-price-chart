@@ -1,7 +1,7 @@
 "use client"
 
 import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
+import { ComposedChart, Area, AreaChart, Bar, BarChart, CartesianGrid, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
 
 import {
     Card,
@@ -17,7 +17,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
-import { transformData } from "@/lib/utils"
+import { transformData, transformVolumes } from "@/lib/utils"
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 
 
@@ -28,15 +28,19 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-export default function CryptoPriceChart({ prices }: { prices: Array<object> }) {
+export default function CryptoPriceChart({ prices, volumes }: { prices: Array<object>, volumes: Array<object> }) {
 
     const chartData = transformData(prices)
+
+    const volumeChartData = transformVolumes(volumes)
 
     const [hoveredData, setHoveredData] = useState({ x: null, y: null, yPosition: undefined });
 
     const [dotCoordinates, setDotCoordinates] = useState([])
 
     const [lastCircleCoordinates, setLastCircleCoordinates] = useState(null)
+
+    // console.log(volumeChartData)
 
 
     return (
@@ -155,7 +159,21 @@ export default function CryptoPriceChart({ prices }: { prices: Array<object> }) 
                         //   stackId="a"
                         />
 
+                        <ChartContainer config={chartConfig} className="p-0">
+                        <BarChart width={600} height={250} data={volumeChartData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            {/* <YAxis /> */}
+                            {/* <Tooltip /> */}
+                            <Bar dataKey="volume" fill="#82ca9d" />
+                        </BarChart>
+                        </ChartContainer>
+
                     </AreaChart>
+
+                    
+
+                    
                 </ChartContainer>
             </CardContent>
         </Card>
