@@ -1,38 +1,26 @@
-"use client"
-
-import { TrendingUp } from "lucide-react"
-import { ComposedChart, Area, AreaChart, Bar, BarChart, CartesianGrid, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
-
+import { useEffect, useState } from "react"
+import {  Area, AreaChart, CartesianGrid, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
 } from "@/components/ui/card"
 import {
     ChartConfig,
     ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
 } from "@/components/ui/chart"
-import { transformData, transformVolumes } from "@/lib/utils"
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-
 
 const chartConfig = {
     price: {
         label: "price",
         color: "hsl(var(--chart-6))",
     },
+    volume: {
+        label: "volume",
+        color: "hsl(var(--chart-4))",
+    }
 } satisfies ChartConfig
 
-export default function CryptoPriceChart({ chartData }: { chartData: Array<object> }) {
-
-    // const chartData = transformData(prices)
-
-    // const volumeChartData = transformVolumes(volumes)
+const AreaChartComponent = ({ chartData }: { chartData: Array<object> }) => {
 
     const [hoveredData, setHoveredData] = useState({ x: null, y: null, yPosition: undefined });
 
@@ -40,13 +28,12 @@ export default function CryptoPriceChart({ chartData }: { chartData: Array<objec
 
     const [lastCircleCoordinates, setLastCircleCoordinates] = useState(null)
 
-    // console.log(volumeChartData)
-
 
     return (
-        <Card className="w-1/2 p-0 border-none rounded-none">
 
-            <CardContent className="relative p-0 border-none">
+        <Card className=" p-0 border-t rounded-none shadow-none z-10">
+
+            <CardContent className="relative p-0 border-none shadow-none">
                 {lastCircleCoordinates && (
                     <div
                         style={{
@@ -68,7 +55,7 @@ export default function CryptoPriceChart({ chartData }: { chartData: Array<objec
                         {Math.round(lastCircleCoordinates.price)}
                     </div>
                 )}
-                <ChartContainer config={chartConfig} className="p-0">
+                <ChartContainer config={chartConfig} className="p-0 border-0">
                     <AreaChart
                         accessibilityLayer
                         data={chartData}
@@ -78,7 +65,7 @@ export default function CryptoPriceChart({ chartData }: { chartData: Array<objec
                             bottom: -30
                         }}
                         style={{ padding: 0 }}
-                        className="border-x border-b rounded-none"
+                        className="border-x rounded-none"
                         onMouseMove={(e) => {
 
                             if (e && e.activeTooltipIndex) {
@@ -112,7 +99,7 @@ export default function CryptoPriceChart({ chartData }: { chartData: Array<objec
                         onMouseLeave={() => setHoveredData({ x: null, y: null, yPosition: undefined })}
 
                     >
-                        <CartesianGrid horizontal={false} stroke="lightgray" className="p-0" />
+                        <CartesianGrid horizontal={false} stroke="lightgray" className="p-0 border-0" />
 
 
 
@@ -124,7 +111,7 @@ export default function CryptoPriceChart({ chartData }: { chartData: Array<objec
                             tickCount={4}
                             //   tickMargin={8}
                             //   tickFormatter={(value) => Math.round(value)}
-                            style={{ display: 'none' }}
+                            style={{ display: 'none', border: 'none' }}
                         />
                         <YAxis domain={['dataMin - 2200', 'dataMax + 600']} tickCount={6} style={{ display: 'none' }} />
                         <Tooltip cursor={{ stroke: "black", strokeWidth: 1 }} content={(props) => <CustomTooltip {...props} yValue={dotCoordinates.cy} />} />
@@ -133,8 +120,8 @@ export default function CryptoPriceChart({ chartData }: { chartData: Array<objec
                             <ReferenceLine y={hoveredData.y} stroke="black" strokeWidth={0.3} strokeDasharray="4 4" />
                         )}
 
-                        <defs>
-                            <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+                        <defs className="border-0">
+                            <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1" className="border-0">
                                 <stop
                                     offset="5%"
                                     stopColor="var(--color-price)"
@@ -154,35 +141,25 @@ export default function CryptoPriceChart({ chartData }: { chartData: Array<objec
                             fillOpacity={0.4}
                             stroke="var(--color-price)"
                             strokeWidth={1.3}
-                            className="p-0"
+                            className="p-0 border-0"
                             dot={(props) => <CustomDot {...props} key={props.cx + props.cy} setDotCoordinates={setDotCoordinates} setLastCircleCoordinates={setLastCircleCoordinates} noOfDots={chartData.length} />}
                         //   stackId="a"
-                        />
 
-                        <ChartContainer config={chartConfig} className="p-0">
-                        <BarChart width={600} height={250} data={volumeChartData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            {/* <YAxis /> */}
-                            {/* <Tooltip /> */}
-                            <Bar dataKey="volume" fill="#82ca9d" />
-                        </BarChart>
-                        </ChartContainer>
+                        />
 
                     </AreaChart>
 
-                    
 
-                    
                 </ChartContainer>
             </CardContent>
         </Card>
     )
 }
 
-
 const CustomTooltip = ({ active, payload, label, yValue }) => {
     if (active && payload && payload.length) {
+
+        // console.log("Payload: ", payload)
 
         const price = payload[0].value;  // Get the hovered price
         return (
@@ -199,7 +176,7 @@ const CustomTooltip = ({ active, payload, label, yValue }) => {
                 transition: "all 0.2s ease-in-out"
 
             }}
-                className="transition-all duration-200 ease-in-out"
+                className="transition-all duration-200 ease-in-out font-medium"
             >
                 {Math.round(price)}
             </div>
@@ -231,3 +208,6 @@ const CustomDot = (props) => {
         />
     );
 };
+
+
+export default AreaChartComponent

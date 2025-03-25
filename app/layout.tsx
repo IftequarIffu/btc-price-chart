@@ -14,9 +14,29 @@ const geistMono = localFont({
 });
 
 const circularStd = localFont({
-  src: "./fonts/CircularStd-Medium.woff",
-  variable: "--font-circular-std-sans",
-  weight: "100 900"
+  src: [
+    {
+      path: './fonts/CircularStd-Black.ttf',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: './fonts/CircularStd-Book.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: './fonts/CircularStd-Medium.ttf',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: './fonts/CircularStd-Bold.ttf',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-circular-std',
 })
 
 export const metadata: Metadata = {

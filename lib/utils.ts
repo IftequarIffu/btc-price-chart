@@ -35,3 +35,22 @@ export function transformVolumes(volumes) {
   return transformedData
 
 }
+
+export function transformWholeData(data) {
+
+  const transformedData =  []
+
+  for(let i=0; i<data.prices.length; i++) {
+    transformedData.push({
+      timestamp: data.prices[i][0],
+      price: data.prices[i][1],
+      volume: data.total_volumes[i][1]
+    })
+  }
+
+  return transformedData
+}
+
+export function convertIntegerToCommaFormat(num: number) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

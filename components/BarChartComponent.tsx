@@ -1,41 +1,36 @@
-'use client'
 import React from 'react'
-import { type ChartConfig } from "@/components/ui/chart"
+import { Card, CardContent } from './ui/card'
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import {
+  ChartConfig,
+  ChartContainer,
+} from "@/components/ui/chart"
 
-import { Bar, BarChart } from "recharts"
-
-import { ChartConfig, ChartContainer } from "@/components/ui/chart"
-
-
-
-const chartData = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
-  ]
-  
 const chartConfig = {
-    desktop: {
-      label: "Desktop",
-      color: "#2563eb",
-    },
-    mobile: {
-      label: "Mobile",
-      color: "#60a5fa",
-    },
-  } satisfies ChartConfig
+  price: {
+    label: "price",
+    color: "hsl(var(--chart-6))",
+  },
+  volume: {
+    label: "volume",
+    color: "hsl(var(--chart-4))",
+  }
+} satisfies ChartConfig
 
-const BarChartComponent = () => {
+const BarChartComponent = ({ chartData }: { chartData: Array<object> }) => {
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-      <BarChart accessibilityLayer data={chartData}>
-        <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-        <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-      </BarChart>
-    </ChartContainer>
+    <Card className=" border-x rounded-none bottom-[40px] h-[43px] overflow-hidden z-0 shadow-none">
+      <CardContent className="border-0 p-0 shadow-none">
+        <ChartContainer config={chartConfig}>
+          <BarChart data={chartData} className="border-none p-0">
+            <CartesianGrid horizontal={false} vertical={false} />
+            <XAxis dataKey="name" type="category" style={{ display: 'none' }} />
+            <Bar dataKey="volume" fill="hsl(216 12.2% 83.9%)" style={{ transform: 'scaleY(0.1)' }} className="border-none" />
+          </BarChart>
+        </ChartContainer>
+
+      </CardContent>
+    </Card>
   )
 }
 
