@@ -142,7 +142,13 @@ const AreaChartComponent = ({ chartData }: { chartData: Array<object> }) => {
                             stroke="var(--color-price)"
                             strokeWidth={1.3}
                             className="p-0 border-0"
-                            dot={(props) => <CustomDot {...props} key={props.cx + props.cy} setDotCoordinates={setDotCoordinates} setLastCircleCoordinates={setLastCircleCoordinates} noOfDots={chartData.length} />}
+                            dot={(props) => 
+                            <CustomDot {...props} 
+                                key={props.cx + props.cy} 
+                                setDotCoordinates={setDotCoordinates} 
+                                setLastCircleCoordinates={setLastCircleCoordinates} 
+                                noOfDots={chartData.length} 
+                            />}
                         //   stackId="a"
 
                         />
