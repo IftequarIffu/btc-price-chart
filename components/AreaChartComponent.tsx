@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+'use client'
+import { memo, useEffect, useState } from "react"
 import {  Area, AreaChart, CartesianGrid, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
 import {
     Card,
@@ -20,13 +21,15 @@ const chartConfig = {
     }
 } satisfies ChartConfig
 
-const AreaChartComponent = ({ chartData }: { chartData: Array<object> }) => {
+const AreaChartComponent = ({ chartData, currentPrice }: { chartData: Array<object>, currentPrice: number }) => {
 
-    const [hoveredData, setHoveredData] = useState({ x: null, y: null, yPosition: undefined });
+    const [hoveredData, setHoveredData] = useState({ x: null, y: null, yPosition: 0 });
 
-    const [dotCoordinates, setDotCoordinates] = useState([])
+    const [dotCoordinates, setDotCoordinates] = useState({cx: 0, cy: 0})
 
-    const [lastCircleCoordinates, setLastCircleCoordinates] = useState(null)
+    const [lastCircleCoordinates, setLastCircleCoordinates] = useState({cx: 0, cy: 0, price: 0})
+
+    console.log("AreaChartComponent Rendered")
 
 
     return (
@@ -52,7 +55,7 @@ const AreaChartComponent = ({ chartData }: { chartData: Array<object> }) => {
                         }}
                         className="z-10"
                     >
-                        {Math.round(lastCircleCoordinates.price)}
+                        {currentPrice}
                     </div>
                 )}
                 <ChartContainer config={chartConfig} className="p-0 border-0">
@@ -76,8 +79,8 @@ const AreaChartComponent = ({ chartData }: { chartData: Array<object> }) => {
 
 
                                     if (circle) {
-                                        const cx = parseFloat(circle.getAttribute('cx'));
-                                        const cy = parseFloat(circle.getAttribute('cy'));
+                                        const cx = parseFloat(circle.getAttribute('cx') as string);
+                                        const cy = parseFloat(circle.getAttribute('cy') as string);
 
                                         setDotCoordinates({ cx: cx, cy: cy })
 
@@ -93,10 +96,10 @@ const AreaChartComponent = ({ chartData }: { chartData: Array<object> }) => {
                                 const xValue = e.activePayload[0].payload.timestamp;
                                 const yValue = e.activePayload[0].payload.price;
                                 const yPixel = e.chartY;
-                                setHoveredData({ x: xValue, y: yValue, yPosition: yPixel });
+                                setHoveredData({ x: xValue, y: yValue, yPosition: yPixel as number });
                             }
                         }}
-                        onMouseLeave={() => setHoveredData({ x: null, y: null, yPosition: undefined })}
+                        onMouseLeave={() => setHoveredData({ x: null, y: null, yPosition: 0 })}
 
                     >
                         <CartesianGrid horizontal={false} stroke="lightgray" className="p-0 border-0" />
@@ -162,12 +165,16 @@ const AreaChartComponent = ({ chartData }: { chartData: Array<object> }) => {
     )
 }
 
-const CustomTooltip = ({ active, payload, label, yValue }) => {
-    if (active && payload && payload.length) {
+// active, payload, label, yValue
+const CustomTooltip = (props: any) => {
+    if (props.active && props.payload && props.payload.length) {
 
         // console.log("Payload: ", payload)
+        // console.log(label)
 
-        const price = payload[0].value;  // Get the hovered price
+        console.log("CustomTooltip Rendered")
+
+        const price = props.payload[0].value;  // Get the hovered price
         return (
             <div style={{
                 position: "absolute",
@@ -178,7 +185,7 @@ const CustomTooltip = ({ active, payload, label, yValue }) => {
                 padding: "6px 12px",
                 borderRadius: "4px",
                 fontSize: "12px",
-                top: yValue - 10,
+                top: props.yValue - 10,
                 transition: "all 0.2s ease-in-out"
 
             }}
@@ -191,14 +198,16 @@ const CustomTooltip = ({ active, payload, label, yValue }) => {
     return null;
 };
 
-const CustomDot = (props) => {
+const CustomDot = (props: { cx: any; cy: any; dataKey: any; index: any; payload: any; setDotCoordinates: any; setLastCircleCoordinates: any; noOfDots: any }) => {
     const { cx, cy, dataKey, index, payload, setDotCoordinates, setLastCircleCoordinates, noOfDots } = props;
 
     useEffect(() => {
         if (index === noOfDots - 1) {
             setLastCircleCoordinates({ cx, cy, price: payload.price });
         }
-    }, [cx, cy, index, noOfDots, setLastCircleCoordinates]);
+    }, [cx, cy, index, noOfDots, setLastCircleCoordinates, props]);
+
+    console.log("CustomDot rendered")
 
     return (
         <circle
@@ -210,7 +219,7 @@ const CustomDot = (props) => {
             strokeWidth={2}
             className="transition-all duration-300 ease-in-out transform"
             onMouseMove={() => setDotCoordinates({ cx: cx, cy: cy })}
-            onMouseLeave={() => setDotCoordinates({ cx: null, cy: null })}
+            onMouseLeave={() => setDotCoordinates({ cx: 0, cy: 0 })}
         />
     );
 };
