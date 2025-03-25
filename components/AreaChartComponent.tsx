@@ -1,5 +1,5 @@
 'use client'
-import { memo, useEffect, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import {  Area, AreaChart, CartesianGrid, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
 import {
     Card,
@@ -147,10 +147,10 @@ const AreaChartComponent = ({ chartData, currentPrice }: { chartData: Array<obje
                             className="p-0 border-0"
                             dot={(props) => 
                             <CustomDot {...props} 
-                                key={props.cx + props.cy} 
-                                setDotCoordinates={setDotCoordinates} 
-                                setLastCircleCoordinates={setLastCircleCoordinates} 
-                                noOfDots={chartData.length} 
+                                // key={props.cx + props.cy} 
+                                // setDotCoordinates={setDotCoordinates} 
+                                // setLastCircleCoordinates={funcSetLastCicleCoordinates} 
+                                noOfDots={Number(chartData.length)} 
                             />}
                         //   stackId="a"
 
@@ -198,31 +198,41 @@ const CustomTooltip = (props: any) => {
     return null;
 };
 
-const CustomDot = (props: { cx: any; cy: any; dataKey: any; index: any; payload: any; setDotCoordinates: any; setLastCircleCoordinates: any; noOfDots: any }) => {
-    const { cx, cy, dataKey, index, payload, setDotCoordinates, setLastCircleCoordinates, noOfDots } = props;
+// const CustomDot = memo((props: { cx: any; cy: any; dataKey: any; index: any; payload: any; noOfDots: any }) => {
+//     const { cx, cy } = props;
 
-    useEffect(() => {
-        if (index === noOfDots - 1) {
-            setLastCircleCoordinates({ cx, cy, price: payload.price });
-        }
-    }, [cx, cy, index, noOfDots, setLastCircleCoordinates, props]);
+//     // useEffect(() => {
+//     //     if (index === noOfDots - 1) {
+//     //         setLastCircleCoordinates({ cx, cy, price: payload.price });
+//     //     }
+//     // }, [cx, cy, index, noOfDots, setLastCircleCoordinates, props]);
 
-    console.log("CustomDot rendered")
+//     console.log("CustomDot rendered")
 
-    return (
-        <circle
-            cx={cx}
-            cy={cy}
-            r={0.3}
-            fill="#8884d8"
-            // stroke="white" 
-            strokeWidth={2}
-            className="transition-all duration-300 ease-in-out transform"
-            onMouseMove={() => setDotCoordinates({ cx: cx, cy: cy })}
-            onMouseLeave={() => setDotCoordinates({ cx: 0, cy: 0 })}
-        />
-    );
-};
+//     return (
+//         <circle
+//             cx={cx}
+//             cy={cy}
+//             r={0.3}
+//             fill="#8884d8"
+//             // stroke="white" 
+//             strokeWidth={2}
+//             className="transition-all duration-300 ease-in-out transform"
+//             // onMouseMove={() => setDotCoordinates({ cx: cx, cy: cy })}
+//             // onMouseLeave={() => setDotCoordinates({ cx: 0, cy: 0 })}
+//         />
+//     );
+// });
 
+const CustomDot = memo(
+    ({ cx, cy }) => {
+        console.log("CustomDot rendered");
+        return <circle cx={cx} cy={cy} r={0.3} fill="#8884d8" strokeWidth={2} />;
+    },
+    (prevProps, nextProps) => prevProps.cx === nextProps.cx && prevProps.cy === nextProps.cy
+);
+
+
+CustomDot.displayName = "CustomDot"
 
 export default AreaChartComponent
