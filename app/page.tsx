@@ -7,7 +7,7 @@ export default function Home() {
   const chartData = transformWholeData(data)
 
   return (
-    <div className="flex justify-center items-center h-screen font-sans">
+    <div className="flex justify-center items-center h-screen font-sans bg-stone-900">
      
         <CombinedChart chartData={chartData} price={63179.71} denom={"USD"} change={2161.42} changePerc={3.54} />
         

@@ -139,9 +139,12 @@ export default function CombinedChart(
             const transformedData = transformWholeData(res.data)
             return transformedData
         },
-        refetchInterval: 30000*1000,
+        refetchInterval: 60*1000,
         notifyOnChangeProps: "all",
       })
+
+      console.log("Error: ", error)
+      console.log("isPending: ", isPending)
 
       const { isPending: isCoinDataPending, error: isCoinDataErrored, data: coinData } = useQuery({
         queryKey: [`price`],
@@ -158,7 +161,7 @@ export default function CombinedChart(
                 priceChangePerc24hr
             }
         },
-        refetchInterval: 30000*1000,
+        refetchInterval: 30*1000,
         notifyOnChangeProps: "all",
       })
 
@@ -166,19 +169,19 @@ export default function CombinedChart(
     
 
     return (
-        <div className="w-1/2 relative border font-medium">
+        <div className="w-5/12 bg-white font-medium rounded-md relative">
 
             {/* Top Div */}
-            <div className="border-b px-8 pt-8">
+            <div className="border-b px-8 pt-8 space-y-3">
 
                 {
                     coinData && 
-                    <div className="space-y-2">
+                    <div className="space-y-1 font-semibold">
                         <div className="flex gap-1 items-start">
                             <h1 className="text-4xl">{convertIntegerToCommaFormat(coinData?.currentPrice)}</h1>
                             <p className="text-gray-600/50 font-semibold ">USD</p>
                         </div>
-                        <div className={`flex gap-2 font-semibold ${coinData?.priceChange24hr > 0 ? "text-green-600" : "text-red-600"}`}>
+                        <div className={`flex gap-1 text-sm font-semibold ${coinData?.priceChange24hr > 0 ? "text-green-600" : "text-red-600"}`}>
                             <p>
                                 {coinData?.priceChange24hr > 0 && "+"}
                                 {coinData?.priceChange24hr.toFixed(2)}
@@ -191,11 +194,11 @@ export default function CombinedChart(
                 
 
                 {/* Tabs */}
-                <div className="flex mt-6">
+                <div className="flex">
                     {buttons.map((item, index) => (
                         <Link key={index} 
                         href={"#"} 
-                        className={`${index === 0 ? "ps-0 py-3 pe-3" : "p-3"} ${!item.isSelected && 'text-black/60 hover:text-black/80'} text-base  border-[hsl(var(--chart-6))] ${item.isSelected && "border-b-4 hover:text-black"}`}>{item.name}</Link>
+                        className={`${index === 0 ? "ps-0 py-3 pe-3" : "p-3"} ${!item.isSelected && 'text-black/60 hover:text-black/80'} text-sm  border-[hsl(var(--chart-6))] ${item.isSelected && "border-b-4 hover:text-black"}`}>{item.name}</Link>
                     ))}
 
                 </div>
@@ -209,38 +212,33 @@ export default function CombinedChart(
 
                     <div className="flex  space-x-4">
                         
-
-
+                    <div className="flex space-x-1 items-center text-sm cursor-pointer hover:text-black/80">
+                            <AiOutlineArrowsAlt />
+                            <p>Fullscreen</p>
+                        </div>
+{/* 
                         <Dialog>
                         <DialogTrigger asChild>
-                        <div className="flex space-x-1 items-center cursor-pointer hover:text-black/80">
+                        <div className="flex space-x-1 items-center text-sm cursor-pointer hover:text-black/80">
                             <AiOutlineArrowsAlt />
                             <p>Fullscreen</p>
                         </div>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[1000px]">
-                            {/* <DialogHeader> */}
-                            {/* <DialogTitle>Edit profile</DialogTitle>
-                            <DialogDescription>
-                                Make changes to your profile here. Click save when you're done.
-                            </DialogDescription> */}
-
-                            {/* </DialogHeader> */}
-                            <div className="mt-4">
+                            
+                            <div className="mt-1">
 
                             </div>
 
                             <AreaChartComponent chartData={data as any} currentPrice={coinData?.currentPrice} />
-                            {/* <BarChartComponent chartData={data as any} /> */}
-                            {/* <DialogFooter>
-                            <Button type="submit">Save changes</Button>
-                            </DialogFooter> */}
+                            <BarChartComponent chartData={data as any} />
+                           
                         </DialogContent>
-                        </Dialog>
+                        </Dialog> */}
 
                             
                         {/* </div> */}
-                        <div className="flex space-x-1 items-center cursor-pointer hover:text-black/80">
+                        <div className="flex space-x-1 items-center text-sm cursor-pointer hover:text-black/80">
                             <AiOutlinePlusCircle />
                             <p>Compare</p>
                         </div>
@@ -249,7 +247,12 @@ export default function CombinedChart(
                     {/* Time Ranges */}
                     <div className="flex space-x-2">
                         {timeRanges.map((item, index) => (
-                            <button key={index} disabled={selectedTimeRange === 0}  onClick={() => setSelectedTimeRange(item.days)} className={`px-2 rounded-sm text-sm text-black/50 hover:text-black/80 ${selectedTimeRange === item.days && 'bg-[hsl(var(--chart-6))] text-white hover:text-white'}`}>
+                            <button key={index} 
+                                disabled={item.days === 0}
+                                onClick={() => {
+                                    if(item.days !== 0)
+                                        setSelectedTimeRange(item.days)
+                                 }} className={`px-2 rounded-sm text-sm text-black/50 ${item.days !== 0 && "hover:text-black/80"} ${selectedTimeRange === item.days && 'bg-[hsl(var(--chart-6))] text-white hover:text-white'}`}>
                                 {item.text}
                             </button>
                         ))}
