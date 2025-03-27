@@ -1,6 +1,6 @@
 'use client'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import {  Area, AreaChart, CartesianGrid, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
+import {  Area, AreaChart, Bar, CartesianGrid, ComposedChart, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
 import {
     Card,
     CardContent,
@@ -9,6 +9,7 @@ import {
     ChartConfig,
     ChartContainer,
 } from "@/components/ui/chart"
+import ComposedChartComponent from "./ComposedChartComponent"
 
 const chartConfig = {
     price: {
@@ -23,53 +24,59 @@ const chartConfig = {
 
 const AreaChartComponent = ({ chartData, currentPrice }: { chartData: Array<object>, currentPrice: number }) => {
 
-    const [hoveredData, setHoveredData] = useState({ timestamp: 0, price: 0 });
+    // const [hoveredData, setHoveredData] = useState({ timestamp: 0, price: 0 });
 
-    const [dotCoordinates, setDotCoordinates] = useState({cx: 0, cy: 0})
+    // const [dotCoordinates, setDotCoordinates] = useState({cx: 0, cy: 0})
 
     const [lastCircleCoordinates, setLastCircleCoordinates] = useState({cx: 0, cy: 0})
 
-    useEffect(() => {
+    const updateLastCircleCoordinates = (cx: number, cy: number) => {
+        setLastCircleCoordinates({cx: cx, cy: cy})
+    }
 
+    // useEffect(() => {
+
+
+    //      const timeoutId = setTimeout(() => {
+    //         if(chartData) {
+    //             // const circle = document.querySelector(`circle[data-circle-index]="7"`)
+    //             // console.log("Circles", circle)
+    //             // console.log("Circles Data: ", circle?.cx, circle?.cy)
+    //             const circles = document.querySelectorAll('circle')
+    //             const circle = Array.from(circles)[circles.length - 1]
+    //             if(circle && lastCircleCoordinates.cx === 0 && lastCircleCoordinates.cy === 0)
+    //                 setLastCircleCoordinates({cx: circle.cx.baseVal.value, cy: circle.cy.baseVal.value})
+    //             // console.log("Circle", circle)
+    //         }
+    //     }, 1000)
+            
+
+    //     return () => {
+    //         clearTimeout(timeoutId)
+    //         setLastCircleCoordinates({cx: 0, cy: 0})
+    //     }
         
-        // setTimeout(() => {
-            if(chartData) {
-                // const circle = document.querySelector(`circle[data-circle-index]="7"`)
-                // console.log("Circles", circle)
-                // console.log("Circles Data: ", circle?.cx, circle?.cy)
-                const circles = document.querySelectorAll('circle')
-                const circle = Array.from(circles)[circles.length - 1]
-                if(circle)
-                    setLastCircleCoordinates({cx: circle.cx.baseVal.value, cy: circle.cy.baseVal.value})
-                // console.log("Circle", circle)
-            }
-        // }, 1000)
 
-        return () => {
-            setLastCircleCoordinates({cx: 0, cy: 0})
-        }
-        
-
-    }, [chartData])
+    // }, [chartData, currentPrice])
 
 
-    const dotRef = useRef({cx: 0, cy: 0, timestamp: 0, price: 0})
+    // const dotRef = useRef({cx: 0, cy: 0, timestamp: 0, price: 0})
+
+    
 
 
-    // console.log("LastCircle Coordinates: ", lastCircleCoordinates)
 
     return (
 
         <Card className=" p-0 border-t rounded-none shadow-none z-10">
 
-            <CardContent className=" p-0 border-none shadow-none ">
-                {/* <div className="relative"> */}
+            <CardContent className=" p-0 border-none shadow-none relative">
 
-                {/* {lastCircleCoordinates && (
+                {lastCircleCoordinates && lastCircleCoordinates.cx !== 0 && lastCircleCoordinates.cy !== 0 && (
                     <div
                         style={{
                             position: "absolute",
-                            left: `${lastCircleCoordinates.cx + 0}px`,
+                            left: `${lastCircleCoordinates.cx - 30}px`,
                             top: `${lastCircleCoordinates.cy + 0}px`,
                             // right: `${lastCircleCoordinates.cx}px`,
                             // transform: "translate(-170%, -50%)",
@@ -85,12 +92,12 @@ const AreaChartComponent = ({ chartData, currentPrice }: { chartData: Array<obje
                     >
                         {currentPrice}
                     </div>
-                )} */}
+                )}
                     
-                {/* </div> */}
+                 <ComposedChartComponent chartData={chartData} config={chartConfig} lastCircleCoordinates={lastCircleCoordinates} updateLastCircleCoordinates={updateLastCircleCoordinates} />
                 
-                <ChartContainer config={chartConfig} className="p-0 border-0">
-                    <AreaChart
+                {/* <ChartContainer config={chartConfig} className="p-0 border-0">
+                    <ComposedChart
                         accessibilityLayer
                         data={chartData}
                         margin={{
@@ -108,28 +115,18 @@ const AreaChartComponent = ({ chartData, currentPrice }: { chartData: Array<obje
                                     const activeDotElement = activeDotElements[0];
                                     const circle = activeDotElement.querySelector('circle');
 
-
                                     if (circle) {
                                         const cx = parseFloat(circle.getAttribute('cx') as string);
                                         const cy = parseFloat(circle.getAttribute('cy') as string);
-
-                                        // setDotCoordinates({ cx: cx, cy: cy })
                                         dotRef.current = {...dotRef.current, cx: cx, cy: cy}
 
                                     }
                                 }
                             }
 
-
-
                             if (e && e.activePayload) {
-                                // console.log(e.activePayload)
-                                // console.log(e.activePayload[0]?.payload.price, e.activePayload[0]?.payload.timestamp)
-                                // console.log("DotRef.current", dotRef.current)
                                 const timestamp = e.activePayload[0].payload.timestamp;
                                 const price = e.activePayload[0].payload.price;
-                                // const yPixel = e.chartY;
-                                // setHoveredData({ timestamp: timestamp, price: price});
                                 dotRef.current = {...dotRef.current, timestamp: timestamp, price: price}
                             }
                         }}
@@ -140,20 +137,19 @@ const AreaChartComponent = ({ chartData, currentPrice }: { chartData: Array<obje
 
                         <XAxis
                             dataKey="price"
-                            //   tickLine={false}
-                            //   axisLine={false}
+                           
                             interval={42}
                             tickCount={4}
-                            //   tickMargin={8}
-                            //   tickFormatter={(value) => Math.round(value)}
+                           
                             style={{ display: 'none', border: 'none' }}
                         />
-                        <YAxis domain={['dataMin - 2200', 'dataMax + 600']} tickCount={6} style={{ display: 'none' }} />
-                        <Tooltip cursor={{ stroke: "black", strokeWidth: 1 }} content={(props) => <CustomTooltip {...props} yValue={dotRef.current.cy} />} />
+                        <YAxis domain={['dataMin - 2200', 'dataMax + 600']} yAxisId={1} tickCount={6} hide={true} style={{ display: 'none' }} />
+
+                        <YAxis domain={['dataMin - 2200', 'dataMax + 600']} yAxisId={2} tickCount={6} hide={true} style={{ display: 'none' }} />
+                        <Tooltip cursor={{ stroke: "black", strokeWidth: 1,  }} 
+                        content={(props) => <CustomTooltip {...props} yValue={dotRef.current.cy} />} 
+                        />
                        
-                        {/* {dotRef.current.price !== 0 && ( */}
-                            {/* <ReferenceLine y={dotRef.current.price} stroke="black" strokeWidth={0.3} strokeDasharray="4 4" /> */}
-                        {/* )} */}
 
                         <ReferenceLineComponent price={dotRef.current.price} />
 
@@ -179,21 +175,58 @@ const AreaChartComponent = ({ chartData, currentPrice }: { chartData: Array<obje
                             stroke="var(--color-price)"
                             strokeWidth={1.3}
                             className="p-0 border-0"
+                            yAxisId={1}
+                            // onMouseMove={(e) => {
+
+                            //     if (e && e.activeTooltipIndex) {
+                            //         const activeDotElements = document.querySelectorAll(' .recharts-active-dot');
+                            //         if (activeDotElements && activeDotElements.length > 0) {
+                            //             const activeDotElement = activeDotElements[0];
+                            //             const circle = activeDotElement.querySelector('circle');
+    
+    
+                            //             if (circle) {
+                            //                 const cx = parseFloat(circle.getAttribute('cx') as string);
+                            //                 const cy = parseFloat(circle.getAttribute('cy') as string);
+    
+                            //                 dotRef.current = {...dotRef.current, cx: cx, cy: cy}
+    
+                            //             }
+                            //         }
+                            //     }
+    
+    
+    
+                            //     if (e && e.activePayload) {
+                                    
+                            //         const timestamp = e.activePayload[0].payload.timestamp;
+                            //         const price = e.activePayload[0].payload.price;
+                                    
+                            //         dotRef.current = {...dotRef.current, timestamp: timestamp, price: price}
+                            //     }
+                            // }}
+                            // onMouseLeave={() => setHoveredData({ timestamp: 0, price: 0})}
+
                             dot={(props) => 
                             <CustomDot {...props} 
-                                // key={props.cx + props.cy} 
-                                // setDotCoordinates={setDotCoordinates} 
-                                // setLastCircleCoordinates={funcSetLastCicleCoordinates} 
-                                // noOfDots={Number(chartData.length)} 
+                                
                             />}
-                        //   stackId="a"
 
                         />
 
-                    </AreaChart>
+                        <Bar dataKey="volume" 
+                            yAxisId={2}
+                            fill="hsl(216 12.2% 83.9%)" 
+                            style={{ transform: 'scaleY(0.1)', transformOrigin: 'bottom' }}  
+                            className="border-red" 
+                        />
+
+                    </ComposedChart>
 
 
-                </ChartContainer>
+                   
+
+                </ChartContainer> */}
             </CardContent>
         </Card>
     )
@@ -210,14 +243,10 @@ const ReferenceLineComponent = ({price}: {price: number}) => {
 
 ReferenceLineComponent.displayName = "ReferenceLineComponent"
 
-// active, payload, label, yValue
 const CustomTooltip = (props: any) => {
     if (props.active && props.payload && props.payload.length) {
 
-        // console.log("Payload: ", payload)
-        // console.log(label)
-
-        // console.log("CustomTooltip Rendered")
+       
 
         const price = props.payload[0].value;  // Get the hovered price
         return (

@@ -43,7 +43,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 
-
 const buttons = [
     {
         name: "Summary",
@@ -139,7 +138,8 @@ export default function CombinedChart(
             const transformedData = transformWholeData(res.data)
             return transformedData
         },
-        refetchInterval: 60*1000,
+        staleTime: 5*60*1000,
+        refetchInterval: 5*60*1000,
         notifyOnChangeProps: "all",
       })
 
@@ -161,7 +161,8 @@ export default function CombinedChart(
                 priceChangePerc24hr
             }
         },
-        refetchInterval: 30*1000,
+        staleTime: 2*60*1000,
+        refetchInterval: 60*1000,
         notifyOnChangeProps: "all",
       })
 
@@ -193,7 +194,6 @@ export default function CombinedChart(
                 }
                 
 
-                {/* Tabs */}
                 <div className="flex">
                     {buttons.map((item, index) => (
                         <Link key={index} 
@@ -216,28 +216,8 @@ export default function CombinedChart(
                             <AiOutlineArrowsAlt />
                             <p>Fullscreen</p>
                         </div>
-{/* 
-                        <Dialog>
-                        <DialogTrigger asChild>
-                        <div className="flex space-x-1 items-center text-sm cursor-pointer hover:text-black/80">
-                            <AiOutlineArrowsAlt />
-                            <p>Fullscreen</p>
-                        </div>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[1000px]">
-                            
-                            <div className="mt-1">
-
-                            </div>
-
-                            <AreaChartComponent chartData={data as any} currentPrice={coinData?.currentPrice} />
-                            <BarChartComponent chartData={data as any} />
-                           
-                        </DialogContent>
-                        </Dialog> */}
 
                             
-                        {/* </div> */}
                         <div className="flex space-x-1 items-center text-sm cursor-pointer hover:text-black/80">
                             <AiOutlinePlusCircle />
                             <p>Compare</p>
@@ -248,9 +228,9 @@ export default function CombinedChart(
                     <div className="flex space-x-2">
                         {timeRanges.map((item, index) => (
                             <button key={index} 
-                                disabled={item.days === 0}
+                                disabled={item.days === 0 || item.days === 365}
                                 onClick={() => {
-                                    if(item.days !== 0)
+                                    if(item.days !== 0 && item.days !== 365)
                                         setSelectedTimeRange(item.days)
                                  }} className={`px-2 rounded-sm text-sm text-black/50 ${item.days !== 0 && "hover:text-black/80"} ${selectedTimeRange === item.days && 'bg-[hsl(var(--chart-6))] text-white hover:text-white'}`}>
                                 {item.text}
@@ -259,11 +239,21 @@ export default function CombinedChart(
                     </div>
 
                 </div>
-                <Suspense fallback={<h1>Loading...</h1>}>
-                <AreaChartComponent chartData={data as any} currentPrice={coinData?.currentPrice} />
-                </Suspense>
+                {/* {
+                    isPending && <div className="w-full h-full">Loading...</div>
+                }
+                {
+                    error && <p>Something went wrong...</p>
+                } */}
+                {
+                    !isPending && !error && data && <AreaChartComponent chartData={data as any} currentPrice={coinData?.currentPrice} />
+                }
+                {/* <Suspense fallback={<h1>Loading...</h1>}> */}
+                {/* <AreaChartComponent chartData={data as any} /> */}
+                {/* <NewComponent chartData={data as any} currentPrice={coinData?.currentPrice} /> */}
+                {/* </Suspense> */}
 
-                <BarChartComponent chartData={data as any} />
+                {/* <BarChartComponent chartData={data as any} /> */}
             </div>
 
 

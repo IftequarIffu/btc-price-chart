@@ -105,6 +105,15 @@ body {
   height: 200px !important;
 }
 
+.recharts-bar {
+  position: relative;
+  top:1000px
+}
+
+.recharts-active-dot .recharts-dot {
+  r: 0.1px !important
+}
+
 @layer base {
   * {
     @apply border-border;
